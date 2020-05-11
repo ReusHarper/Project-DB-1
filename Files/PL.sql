@@ -66,7 +66,6 @@ END p_pre_ref_upd;
 CREATE OR REPLACE PROCEDURE p_InsertaPrestamo (vF_inic DATE,/* vF_fin DATE*/ vMulta NUMBER/*,vRefre NUMBER*/,vF_devol DATE,vID_lec NUMBER,vNumEj NUMBER,vID_Mat NUMBER )
 AS
     -- Variables:
-<<<<<<< HEAD
     vTipoLector LECTOR.id_tipo%TYPE;
     vDiasPres TIPO_LECTOR.lim_dia%TYPE;
     vRefre NUMBER;
@@ -80,34 +79,6 @@ BEGIN
 
     INSERT INTO PRESTAMO VALUES(vF_inic,vF_fin,vMulta,vRefre,vF_devol,vID_lec,vNumEj,vID_Mat);
 END;
-=======
-    v_tipoLec tipo_lector.tipoLector%TYPE;
--- Procesos:
-BEGIN
-    SELECT  t.tipoLector
-    INTO    v_tipoLec
-    FROM    tipo_lector t
-    JOIN    lector l
-    ON      t.id_tipo = l.id_tipo
-    JOIN    prestamo p
-    ON      l.id_lector   = p.id_lector
-    WHERE   p.id_prestamo = a_idPre;
-
-    IF v_tipoLec = 'E' THEN
-        UPDATE PRESTAMO
-        SET    f_devol     = f_devol + 8
-        WHERE  id_prestamo = a_idPre;
-    ELSIF v_tipoLec = 'P' THEN
-        UPDATE PRESTAMO
-        SET    f_devol     = f_devol + 15
-        WHERE  id_prestamo = a_idPre;
-    ELSIF v_tipoLec = 'I' THEN
-        UPDATE PRESTAMO
-        SET    f_devol     = f_devol + 30
-        WHERE  id_prestamo = a_idPre;
-    END IF;
-END p_pre_fDev_upd;
->>>>>>> 1c39c7e9f26795684d6ff791075d81800362b86b
 /
 
 
@@ -168,12 +139,11 @@ BEGIN
     WHERE  p.id_lector = l.id_lector
     AND    p.id_lector = a_idLec;
 
-    IF v_fDev IS null THEN
-        v_fDev := SYSDATE;
-    END IF;
+    --IF v_fDev IS null THEN
+    --    v_fDev := SYSDATE;
+    --END IF;
 
     RETURN (v_fDev);
-<<<<<<< HEAD
 END;
 /
 
@@ -192,8 +162,6 @@ BEGIN
     AND    p.id_lector = a_idLec;
 
     RETURN (v_fVen);
-=======
->>>>>>> 1c39c7e9f26795684d6ff791075d81800362b86b
 END;
 /
 
@@ -231,13 +199,13 @@ END f_pre_fDev_upd;
 CREATE OR REPLACE FUNCTION f_CalculaMulta
 (vID_lec IN prestamo.id_lector%TYPE, vNumEj IN prestamo.numEj%TYPE, vID_Mat IN prestamo.id_mat%TYPE)--TENEMOS QUE TOMAR TODA LA PK COMPLETA DE PRESTAMO
 RETURN NUMBER --VA A SER EL TOTAL A DEBER
-IS
-vMulta NUMBER(6);
-vFechaInic DATE;
-vFechaFin DATE;
-vDias NUMBER(3);
-vFechaDevo DATE;
-vFechaActual DATE;
+    IS
+        vMulta          NUMBER(6);
+        vFechaInic      DATE;
+        vFechaFin       DATE;
+        vDias           NUMBER(3);
+        vFechaDevo      DATE;
+        vFechaActual    DATE;
 BEGIN
     vFechaActual:=SYSDATE;
     --Tomamos las fechas iniciales y finales del prestamo en cuestion
@@ -313,18 +281,14 @@ END;
 CREATE OR REPLACE TRIGGER t_pre_eje_ai AFTER INSERT ON PRESTAMO FOR EACH ROW
 DECLARE
     --Variables
+    PRAGMA AUTONOMOUS_TRANSACTION;
 -- Procesos
 BEGIN
     p_pre_upd(:new.numEj);
 END;
 /
 
-
---CREATE OR REPLACE PACKAGE n_fDev
-
-
 -- Disparador encargado de realzar un resello del prestamo del material prestado al lector
-<<<<<<< HEAD
 CREATE OR REPLACE TRIGGER t_pre_ref_bi BEFORE UPDATE OF f_devol ON PRESTAMO FOR EACH ROW
 DECLARE
     --Variables:
@@ -339,8 +303,12 @@ BEGIN
 
     IF v_fDev = v_fVen THEN
         IF v_refAut > 0 THEN
-            :new.refre_aut := :old.refre_aut - 1;
-            :new.f_devol   := f_pre_fDev_upd(:old.id_prestamo);
+            --v_refAut := :old.refre_aut - 1;
+            --v_fVen   := f_pre_fDev_upd(:old.id_prestamo);
+            DBMS_OUTPUT.PUT_LINE(v_refAut);
+            DBMS_OUTPUT.PUT_LINE(v_fVen);
+            --:new.refre_aut := :old.refre_aut - 1;
+            --:new.f_devol   := f_pre_fDev_upd(:old.id_prestamo);
             --p_pre_ref_upd(:old.id_prestamo);
             --p_pre_fDev_upd(:old.id_prestamo);
         ELSE
@@ -348,47 +316,12 @@ BEGIN
         END IF;
     ELSE
         DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. La fecha de vencimiento no coincide con la fecha de devolucion.');
-=======
-CREATE OR REPLACE TRIGGER t_pre_ref_bi BEFORE UPDATE ON PRESTAMO FOR EACH ROW
-DECLARE
-    --Variables:
-    --v_fDev      prestamo.f_devol%TYPE;
-    v_refAut    prestamo.refre_aut%TYPE;
--- Procesos:
-BEGIN
-    --v_fDev = f_preYlec_fDev(:new.id_lector);
-    v_refAut := f_preYlec_ref(:new.id_lector);
-
-    IF v_refAut > 0 THEN
-        p_pre_ref_upd(:new.id_prestamo);
-        p_pre_fDev_upd(:new.id_prestamo);
-    ELSE
-        DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. El numero de refrendos ha llegado al limite.');
->>>>>>> 1c39c7e9f26795684d6ff791075d81800362b86b
     END IF;
 END;
 /
 
-<<<<<<< HEAD
 -- Disparador encargado de ingresar a un lector de baja:
 CREATE OR REPLACE TRIGGER t_DetallesLectorBaja
-=======
--- Disparador detalles de cuando se da un lector de baja
-CREATE TABLE LECTOR_BAJA(
-    id_lector  NUMBER(10)      ,
-    nomL       VARCHAR2(30)    ,
-    apPL       VARCHAR2(30)    ,
-    apML       CHAR(18),
-    telef      VARCHAR2(30)    ,
-    calle      VARCHAR2(30)    ,
-    colonia    CHAR(20)        ,
-    numero     CHAR(18)        ,
-    fech_baja  DATE
-);
-
-
-CREATE OR REPLACE TRIGGER tg_DetallesLectorBaja
->>>>>>> 1c39c7e9f26795684d6ff791075d81800362b86b
 AFTER DELETE
 ON LECTOR
 FOR EACH ROW
@@ -404,11 +337,7 @@ BEGIN
     numero           ,
     fech_baja)
     VALUES (
-<<<<<<< HEAD
         :OLD.id_lector  ,
-=======
-        :OLD.id_lector  ,      
->>>>>>> 1c39c7e9f26795684d6ff791075d81800362b86b
         :OLD.nomL       ,
         :OLD.apPL       ,
         :OLD.apML       ,
@@ -419,10 +348,6 @@ BEGIN
         SYSDATE);
 END;
 /
-<<<<<<< HEAD
-=======
-
->>>>>>> 1c39c7e9f26795684d6ff791075d81800362b86b
 
 
 -- Eliminacion de instrucciones pl/sql
@@ -434,7 +359,7 @@ DROP FUNCTION  f_preYlec_mul;
 
 DROP TRIGGER   t_preYlec_bi;
 DROP TRIGGER   t_pre_eje_ai;
-DROP TRIGGER   tg_DetallesLectorBaja;
+
 
 
 
