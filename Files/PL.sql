@@ -267,7 +267,7 @@ DROP FUNCTION  f_preYlec_mul;
 
 DROP TRIGGER   t_preYlec_bi;
 DROP TRIGGER   t_pre_eje_ai;
-
+DROP TRIGGER   tg_DetallesLectorBaja;
 
 
 
