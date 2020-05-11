@@ -195,7 +195,7 @@ END;
 /
 
 -- Disparador encargado de realzar un resello del prestamo del material prestado al lector
-CREATE OR REPLACE TRIGGER t_pre_ref_bi BEFORE INSERT ON PRESTAMO FOR EACH ROW
+CREATE OR REPLACE TRIGGER t_pre_ref_bi BEFORE UPDATE ON PRESTAMO FOR EACH ROW
 DECLARE
     --Variables:
     --v_fDev      prestamo.f_devol%TYPE;
