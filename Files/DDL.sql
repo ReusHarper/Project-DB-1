@@ -2,7 +2,7 @@
 -- O DIRECTAMENTE SE LE PUEDE AGREGAR
 --'PRIMARY KEY' AL ATRIBUTO QUE SE QUIERA HACER PK
 CREATE TABLE AUTOR (
-    id_autor       NUMBER(4)     PRIMARY KEY, /*NOT NULL*/ --AGREGADO PK--------------------CORREGIDO--------------------
+    id_autor       NUMBER(10)    PRIMARY KEY, /*NOT NULL*/ --AGREGADO PK--------------------CORREGIDO--------------------
 	nomA           VARCHAR2(30)  NOT NULL,
 	apPA           VARCHAR2(30)  NOT NULL,
 	apMA           VARCHAR2(30),
@@ -21,6 +21,7 @@ CREATE TABLE MATERIAL (
     tipoMat        CHAR(1)       NOT NULL,
     CONSTRAINT     ck_mat_tipMat CHECK (tipoMat IN ('L','T'))
 );
+
 --SE ELIMINA ESE CONSTRAINT
 /*ALTER TABLE MATERIAL ADD CONSTRAINT pk_mat_idMat
 PRIMARY KEY (id_mat);*/
@@ -31,11 +32,16 @@ CHECK (tipoMat IN ('L','T'));
 CREATE TABLE CUENTA (
 	/*id_autor_material  NUMBER(4)   NOT NULL,--SE VA A ELIMINAR*/------------------------------CORREGIDO-----------------------
 	id_mat         NUMBER(10),
-	id_autor       NUMBER(4),
+	id_autor       NUMBER(10),
     CONSTRAINT     fk_cue_idMat            FOREIGN KEY (id_mat)   REFERENCES  MATERIAL(id_mat) ON DELETE CASCADE,
     CONSTRAINT     fk_cue_idAut            FOREIGN KEY (id_autor) REFERENCES  AUTOR(id_autor),
     CONSTRAINT     PK_cue_idMatYidAut      PRIMARY KEY (id_mat,id_autor)
 );
+
+INSERT INTO CUENTA VALUES();
+INSERT INTO CUENTA VALUES();
+INSERT INTO CUENTA VALUES();
+
 --SE AGREGAN DIRECTAMENTE ESOS CONSTRAINT EN LA CREACION  DE LA TABLA
 /*ALTER TABLE CUENTA ADD CONSTRAINT pk_cue_idAutMat
 PRIMARY KEY (id_autor_material);
@@ -54,11 +60,13 @@ UNIQUE (id_mat);
 
 ALTER TABLE CUENTA ADD CONSTRAINT ak_cue_idAut
 UNIQUE (id_autor);
+
+ALTER TABLE CUENTA DROP CONSTRAINT ak_cue_idAut;
 */
 
 CREATE TABLE LIBRO (
     id_mat     NUMBER(10)    PRIMARY KEY  /*NOT NULL*/,----------------------CORREGIDO----------------
-	numAd      NUMBER(4)     NOT NULL,--DEBE DE SER CONSTRAINT UNIQUE
+	numAd      NUMBER(10)     NOT NULL,--DEBE DE SER CONSTRAINT UNIQUE
 	isbn       VARCHAR2(20)  NOT NULL,--DEBE DE SER CONSTRAINT UNIQUE
 	edicion    VARCHAR2(30)  NOT NULL,
 	tema       VARCHAR2(30)  NOT NULL,
@@ -66,6 +74,9 @@ CREATE TABLE LIBRO (
     CONSTRAINT ak_lib_isbn   UNIQUE (isbn),
     CONSTRAINT ak_lib_numAd  UNIQUE (numAd)
 );
+
+
+
 --LOS SIG. CONSTRAINTS VAN DENTRO DE LA TABLA
 /*ALTER TABLE LIBRO ADD CONSTRAINT pk_lib_idMat
 PRIMARY KEY (id_mat);
@@ -79,26 +90,32 @@ ALTER TABLE LIBRO ADD CONSTRAINT ak_lib_isbn
 UNIQUE (isbn);*/
 
 CREATE TABLE DIRECTOR (
-	id_dir     NUMBER(4)     PRIMARY KEY/*NOT NULL*/,----------------------CORREGIDO------------------------
+	id_dir     NUMBER(10)    PRIMARY KEY/*NOT NULL*/,----------------------CORREGIDO------------------------
 	nomD       VARCHAR2(30)  NOT NULL,
 	apPD       CHAR(18)      NOT NULL,
 	apMD       VARCHAR2(30),
 	gdoAcad    VARCHAR2(30)  NOT NULL
 );
+
+INSERT INTO DIRECTOR VALUES();
+
 --ESE CONSTRAINT VA DENTRO DE LA TABLA
 /*ALTER TABLE DIRECTOR ADD CONSTRAINT pk_dir_idDir
 PRIMARY KEY (id_dir);*/
 
 CREATE TABLE TESIS (
     id_mat     NUMBER(10)  PRIMARY KEY/*NOT NULL*/,-----------------------CORREGIDO----------------------
-	id_tesis   NUMBER(4),
+	id_tesis   NUMBER(10),
 	carrera    CHAR(18)    NOT NULL,
 	anio       DATE        NOT NULL,
-	id_dir     NUMBER(4),
+	id_dir     NUMBER(10),
     CONSTRAINT fk_tes_idMat      FOREIGN KEY (id_mat) REFERENCES  MATERIAL(id_mat) ON DELETE CASCADE,
     CONSTRAINT fk_tes_idDir      FOREIGN KEY (id_dir) REFERENCES  DIRECTOR(id_dir),
     CONSTRAINT ak_tesis_id_tesis UNIQUE (id_tesis)--LE FALTABA AGREGAR ESE CONSTRAINT
 );
+
+INSERT INTO TESIS VALUES(,,'Informatica','2017',);
+
 --ESOS CONSTRAINT VAN DENTRO DE LA TABLA
 /*ALTER TABLE TESIS ADD CONSTRAINT pk_tes_idMat
 PRIMARY KEY (id_mat);
@@ -113,13 +130,18 @@ FOREIGN KEY (id_dir)
 REFERENCES  DIRECTOR(id_dir);*/
 
 CREATE TABLE EJEMPLAR (
-	numEj      NUMBER(10)    NOT NULL,
-    id_mat     NUMBER(10)    NOT NULL,
-	estatus    VARCHAR2(20)  NOT NULL,--AGREGAR CONSTRAINT CHECK---------------------------------CORREGIDO----------------------
-    CONSTRAINT fk_eje_idMat FOREIGN KEY (id_mat) REFERENCES  MATERIAL(id_mat) ON DELETE CASCADE,
+	numEj      NUMBER(10)     NOT NULL,
+    id_mat     NUMBER(10)     NOT NULL,
+	estatus    VARCHAR2(20)   NOT NULL,--AGREGAR CONSTRAINT CHECK---------------------------------CORREGIDO----------------------
+    CONSTRAINT fk_eje_idMat   FOREIGN KEY (id_mat) REFERENCES  MATERIAL(id_mat) ON DELETE CASCADE,
     CONSTRAINT pk_eje_nejYidm PRIMARY KEY (numEj,id_mat),
-    CONSTRAINT ck_ejemplar CHECK (estatus IN ('DISPONIBLE','EN PRESTAMO','NO SALE','EN MANTENIMIENTO'))--LE FALTABA EL CONSTRAINT
+    CONSTRAINT ck_ejemplar    CHECK (estatus IN ('DISPONIBLE','EN PRESTAMO','NO SALE','EN MANTENIMIENTO'))--LE FALTABA EL CONSTRAINT
 );
+
+INSERT INTO EJEMPLAR VALUES();
+INSERT INTO EJEMPLAR VALUES();
+INSERT INTO EJEMPLAR VALUES();
+
 /*
 ALTER TABLE EJEMPLAR ADD CONSTRAINT pk_eje_nejYidm
 PRIMARY KEY (numEj,id_mat);
@@ -137,6 +159,11 @@ CREATE TABLE TIPO_LECTOR (
 	lim_refrendo   NUMBER(4) NOT NULL,
     CONSTRAINT ck_tle_tipLec CHECK (tipoLector IN ('E','P','I'))
 );
+
+INSERT INTO TIPO_LECTOR VALUES();
+INSERT INTO TIPO_LECTOR VALUES();
+INSERT INTO TIPO_LECTOR VALUES();
+
 /*
 ALTER TABLE TIPO_LECTOR ADD CONSTRAINT pk_tle_idTipo
 PRIMARY KEY (id_tipo);
@@ -158,6 +185,11 @@ CREATE TABLE LECTOR (
 	id_tipo    NUMBER(1)       NOT NULL,
     CONSTRAINT fk_lec_idTip FOREIGN KEY (id_tipo) REFERENCES  TIPO_LECTOR(id_tipo) ON DELETE SET NULL
 );
+
+INSERT INTO LECTOR VALUES();
+INSERT INTO LECTOR VALUES();
+INSERT INTO LECTOR VALUES();
+
 /*
 ALTER TABLE LECTOR ADD CONSTRAINT pk_lec_idLec
 PRIMARY KEY (id_lector);
@@ -170,19 +202,24 @@ ON DELETE SET NULL;  --Duda ahi
 -- ALTER TABLE LECTOR DROP CONSTRAINT fk_lec_idTip;
 
 CREATE TABLE PRESTAMO (
-	--id_prestamo    NUMBER(10)  NOT NULL,
+	id_prestamo    NUMBER(10)  NOT NULL,
 	f_inicio       DATE        NOT NULL,--HACERLOS UNICOS O UNIRLOS EN UNA PK
 	f_venci        DATE        NOT NULL,
-	multa          NUMBER(4)   ,--DEBERIA DE SER OPCIONAL LA MULTA
+	multa          NUMBER(4),  --DEBERIA DE SER OPCIONAL LA MULTA
 	refre_aut      NUMBER(4),
 	f_devol        DATE,
     id_lector      NUMBER(10),--HACERLO UNICO
 	numEj          NUMBER(10),--HACERLO UNICO
 	id_mat         NUMBER(10),--HACERLO UNICO
     CONSTRAINT fk_pre_nejYidm FOREIGN KEY (numEj,id_mat) REFERENCES  EJEMPLAR (numEj,id_mat) ON DELETE CASCADE,
-    CONSTRAINT fk_pre_idLec FOREIGN KEY (id_lector) REFERENCES  LECTOR (id_lector),
-    CONSTRAINT pk_pre_idPre PRIMARY KEY (f_inicio,id_lector,numEj,id_mat)--AHORA SI LA PK DE PRESTAMO SE TIENE SENIDO Y AS� NOS CORROBORAMOS DE QUE LAS PK NO SE REPITAN
+    CONSTRAINT fk_pre_idLec   FOREIGN KEY (id_lector)    REFERENCES  LECTOR (id_lector),
+    CONSTRAINT pk_pre_idPre   PRIMARY KEY (f_inicio,id_lector,numEj,id_mat)--AHORA SI LA PK DE PRESTAMO SE TIENE SENIDO Y AS� NOS CORROBORAMOS DE QUE LAS PK NO SE REPITAN
 );
+
+INSERT INTO PRESTAMO VALUES();
+INSERT INTO PRESTAMO VALUES();
+INSERT INTO PRESTAMO VALUES();
+
 /*
 ALTER TABLE PRESTAMO ADD CONSTRAINT pk_pre_idPre
 PRIMARY KEY (id_prestamo);
