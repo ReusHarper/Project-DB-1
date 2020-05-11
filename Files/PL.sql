@@ -204,7 +204,7 @@ BEGIN
 
         IF v_refAut > 0 THEN
             p_pre_ref_upd(:new.id_prestamo);
-            p_pre_ref_fDev(:new.id_prestamo);
+            p_pre_fDev_upd(:new.id_prestamo);
         ELSE
             DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. El numero de refrendos ha llegado al limite.');
         END IF;
