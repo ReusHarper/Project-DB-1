@@ -139,7 +139,7 @@ END;
 
 -- Funcion encargada de retornar la fecha de devolucion
 CREATE OR REPLACE FUNCTION f_preYlec_fDev(a_idLec IN NUMBER)
-RETURN NUMBER
+RETURN DATE
     -- Variables:
     IS
         v_fDev prestamo.f_devol%TYPE;
@@ -149,11 +149,13 @@ BEGIN
     INTO   v_fDev
     FROM   prestamo p, lector l
     WHERE  p.id_lector = l.id_lector
-    AND    l.id_lector = a_idLec;
+    AND    p.id_lector = a_idLec;
 
-    IF v_fDev = null THEN
-        v_fDev = -1;
-    RETURN (v_refAut);
+    IF v_fDev IS null THEN
+        v_fDev := SYSDATE;
+    END IF;
+
+    RETURN (v_fDev);
 END;
 /
 
