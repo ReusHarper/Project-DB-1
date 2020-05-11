@@ -50,6 +50,47 @@ BEGIN
 END;
 /
 
+-- Procedimiento encargado de actualizar el numero de refrendos por cada resello que el lector ejerza:
+CREATE OR REPLACE PROCEDURE p_pre_ref_upd(a_idPre IN NUMBER)
+AS
+    -- Variables:
+-- Procesos:
+BEGIN
+    UPDATE PRESTAMO
+    SET    refre_aut   = refre_aut - 1
+    WHERE  id_prestamo = a_idPre;
+END p_pre_ref_upd;
+/
+
+-- Procedimiento encargado de actualizar la fecha de devolucion dependiendo del tipo lector:
+CREATE OR REPLACE PROCEDURE p_pre_fDev_upd(a_idPre IN NUMBER)
+AS
+    -- Variables:
+    v_tipoLec lector.tipoLector%TYPE;
+-- Procesos:
+BEGIN
+    SELECT  DISTINCT l.tipoLector
+    INTO    v_tipoLec
+    FROM    lector l, prestamo p
+    WHERE   l.id_lector   = p.id_lector
+    AND     p.id_prestamo = a_idPre;
+
+    ELSIF v_tipoLec = 'E'
+        UPDATE PRESTAMO
+        SET    f_devol     = f_devol + 8
+        WHERE  id_prestamo = a_idPre;
+    IF v_tipoLec = 'E'
+        UPDATE PRESTAMO
+        SET    f_devol     = f_devol + 15
+        WHERE  id_prestamo = a_idPre;
+    ELSIF v_tipoLec = 'E'
+        UPDATE PRESTAMO
+        SET    f_devol     = f_devol + 30
+        WHERE  id_prestamo = a_idPre;
+    END IF;
+END p_pre_fDev_upd;
+/
+
 ----------------------------------------------------------------------------------------
 -- FUNCIONES:
 
@@ -72,6 +113,44 @@ BEGIN
     END IF;
 
     RETURN (v_multa);
+END;
+/
+
+-- Funcion encargada de retornar los refrendos actuales y autorizados por el lector en cada prestamo
+CREATE OR REPLACE FUNCTION f_preYlec_ref(a_idLec IN NUMBER)
+RETURN NUMBER
+    -- Variables:
+    IS
+        v_refAut prestamo.refre_aut%TYPE;
+-- Procesos:
+BEGIN
+    SELECT p.refre_aut
+    INTO   v_refAut
+    FROM   prestamo p, lector l
+    WHERE  p.id_lector = l.id_lector
+    AND    l.id_lector = a_idLec;
+
+    RETURN (v_refAut);
+END;
+/
+
+-- Funcion encargada de retornar la fecha de devolucion
+CREATE OR REPLACE FUNCTION f_preYlec_fDev(a_idLec IN NUMBER)
+RETURN NUMBER
+    -- Variables:
+    IS
+        v_fDev prestamo.f_devol%TYPE;
+-- Procesos:
+BEGIN
+    SELECT p.f_devol
+    INTO   v_fDev
+    FROM   prestamo p, lector l
+    WHERE  p.id_lector = l.id_lector
+    AND    l.id_lector = a_idLec;
+
+    IF v_fDev = null THEN
+        v_fDev = -1;
+    RETURN (v_refAut);
 END;
 /
 
@@ -109,6 +188,33 @@ BEGIN
     p_pre_upd(:new.numEj);
 END;
 /
+
+-- Disparador encargado de realzar un resello del prestamo del material prestado al lector
+CREATE OR REPLACE TRIGGER t_pre_ref_bi BEFORE INSERT ON PRESTAMO FOR EACH ROW
+DECLARE
+    --Variables:
+    v_fDev      prestamo.f_devol%TYPE;
+    v_refAut    prestamo.refre_aut%TYPE;
+-- Procesos:
+BEGIN
+    v_fDev = f_preYlec_fDev(:new.id_lector);
+
+    IF v_fDev != -1 THEN
+        v_refAut := f_preYlec_ref(:new.id_lector);
+
+        IF v_refAut > 0 THEN
+            p_pre_ref_upd(:new.id_prestamo);
+            p_pre_ref_fDev(:new.id_prestamo);
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. El numero de refrendos ha llegado al limite.');
+        END IF;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. Aun no se ha devuelto el material prestado');
+    END IF;
+END;
+/
+
+
 
 
 -- Eliminacion de instrucciones pl/sql
