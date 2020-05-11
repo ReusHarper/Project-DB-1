@@ -198,27 +198,21 @@ END;
 CREATE OR REPLACE TRIGGER t_pre_ref_bi BEFORE INSERT ON PRESTAMO FOR EACH ROW
 DECLARE
     --Variables:
-    v_fDev      prestamo.f_devol%TYPE;
+    --v_fDev      prestamo.f_devol%TYPE;
     v_refAut    prestamo.refre_aut%TYPE;
 -- Procesos:
 BEGIN
-    v_fDev = f_preYlec_fDev(:new.id_lector);
+    --v_fDev = f_preYlec_fDev(:new.id_lector);
+    v_refAut := f_preYlec_ref(:new.id_lector);
 
-    IF v_fDev != -1 THEN
-        v_refAut := f_preYlec_ref(:new.id_lector);
-
-        IF v_refAut > 0 THEN
-            p_pre_ref_upd(:new.id_prestamo);
-            p_pre_fDev_upd(:new.id_prestamo);
-        ELSE
-            DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. El numero de refrendos ha llegado al limite.');
-        END IF;
+    IF v_refAut > 0 THEN
+        p_pre_ref_upd(:new.id_prestamo);
+        p_pre_fDev_upd(:new.id_prestamo);
     ELSE
-        DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. Aun no se ha devuelto el material prestado');
+        DBMS_OUTPUT.PUT_LINE('ERROR: No es posible ejercer el resello. El numero de refrendos ha llegado al limite.');
     END IF;
 END;
 /
-
 
 
 
