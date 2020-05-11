@@ -75,11 +75,11 @@ BEGIN
     WHERE   l.id_lector   = p.id_lector
     AND     p.id_prestamo = a_idPre;
 
-    ELSIF v_tipoLec = 'E'
+    IF v_tipoLec = 'E'
         UPDATE PRESTAMO
         SET    f_devol     = f_devol + 8
         WHERE  id_prestamo = a_idPre;
-    IF v_tipoLec = 'P'
+    ELSIF v_tipoLec = 'P'
         UPDATE PRESTAMO
         SET    f_devol     = f_devol + 15
         WHERE  id_prestamo = a_idPre;
