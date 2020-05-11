@@ -214,6 +214,48 @@ BEGIN
 END;
 /
 
+-- Disparador detalles de cuando se da un lector de baja
+CREATE TABLE LECTOR_BAJA(
+    id_lector  NUMBER(10)      ,
+    nomL       VARCHAR2(30)    ,
+    apPL       VARCHAR2(30)    ,
+    apML       CHAR(18),
+    telef      VARCHAR2(30)    ,
+    calle      VARCHAR2(30)    ,
+    colonia    CHAR(20)        ,
+    numero     CHAR(18)        ,
+    fech_baja  DATE
+);
+
+
+CREATE OR REPLACE TRIGGER tg_DetallesLectorBaja
+AFTER DELETE
+ON LECTOR
+FOR EACH ROW
+BEGIN
+    INSERT INTO LECTOR_BAJA(
+    id_lector        ,
+    nomL             ,
+    apPL             ,
+    apML             ,
+    telef            ,
+    calle            ,
+    colonia          ,
+    numero           ,
+    fech_baja)
+    VALUES (
+        :OLD.id_lector  ,      
+        :OLD.nomL       ,
+        :OLD.apPL       ,
+        :OLD.apML       ,
+        :OLD.telef      ,
+        :OLD.calle      ,
+        :OLD.colonia    ,
+        :OLD.numero     ,
+        SYSDATE);
+END;
+/
+
 
 
 -- Eliminacion de instrucciones pl/sql
