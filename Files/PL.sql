@@ -21,8 +21,7 @@ AS
     -- Variables
 -- Procesos
 BEGIN
-    INSERT INTO PRESTAMO (id_prestamo, f_inicio, f_venci, multa, refre_aut, id_lector, numEj, id_mat)
-    VALUES (a_idPre, a_fIni, a_fVen, 0, a_refAut, a_id_lector, a_numEj, a_idMat);
+    INSERT INTO PRESTAMO VALUES (a_idPre, a_fIni, a_fVen, 0, a_refAut, null, a_id_lector, a_numEj, a_idMat);
 END p_preYlec_ins;
 /
 
@@ -39,6 +38,17 @@ BEGIN
 END p_pre_upd;
 /
 
+-- Procedimiento encargado de dar de alta a un nuevo lector.
+CREATE OR REPLACE PROCEDURE p_lec_altaLec(vID_lector IN NUMBER, vNomL IN VARCHAR2, vApPL IN VARCHAR2, vApML IN VARCHAR2, vF_alta DATE, vTelef IN VARCHAR2,vCalle IN VARCHAR2, vColonia IN VARCHAR2, vNumero IN VARCHAR2,vID_tipo IN NUMBER)
+AS
+    vFecha_vig LECTOR.f_alta%TYPE;
+BEGIN
+    vfecha_vig := ADD_MONTHS(vf_alta, 12);
+
+    INSERT INTO LECTOR VALUES(vid_lector,vNomL,vappl,vapml,vfecha_vig,vf_alta,vtelef,vcalle,vcolonia,vNumero,vid_tipo);
+    DBMS_OUTPUT.PUT_LINE('Lector ' || vNomL || ' agregado.');
+END;
+/
 
 ----------------------------------------------------------------------------------------
 -- FUNCIONES:
@@ -57,6 +67,10 @@ BEGIN
     WHERE  p.id_lector = l.id_lector
     AND    l.id_lector = a_idLec;
 
+    IF v_multa = null THEN
+        v_multa := 0;
+    END IF;
+
     RETURN (v_multa);
 END;
 /
@@ -69,14 +83,16 @@ END;
 -- no cuente con alguna multa
 CREATE OR REPLACE TRIGGER t_preYlec_bi BEFORE INSERT ON PRESTAMO FOR EACH ROW
 DECLARE
-    --Variables
+    --Variables:
     v_multa     prestamo.multa%TYPE;
--- Procesos
+-- Procesos:
 BEGIN
     v_multa := f_preYlec_mul(:new.id_lector);
 
     IF v_multa = 0 THEN
-        p_preYlec_ins(:new.id_prestamo, :new.f_inicio, :new.f_venci, :new.refre_aut, :new.id_lector, :new.numEj, :new.id_mat);
+        --INSERT INTO PRESTAMO VALUES (:new.id_prestamo, :new.f_inicio, :new.f_venci, 0, :new.refre_aut, null, :new.id_lector, :new.numEj, :new.id_mat);
+        :new.multa   := 0;
+        :new.f_devol := null;
     ELSE
         DBMS_OUTPUT.PUT_LINE('ERROR: El id del usuario cuenta con una multa. No es posible ejercer la operacion.');
     END IF;
