@@ -66,24 +66,27 @@ END p_pre_ref_upd;
 CREATE OR REPLACE PROCEDURE p_pre_fDev_upd(a_idPre IN NUMBER)
 AS
     -- Variables:
-    v_tipoLec lector.tipoLector%TYPE;
+    v_tipoLec tipo_lector.tipoLector%TYPE;
 -- Procesos:
 BEGIN
-    SELECT  DISTINCT l.tipoLector
+    SELECT  t.tipoLector
     INTO    v_tipoLec
-    FROM    lector l, prestamo p
-    WHERE   l.id_lector   = p.id_lector
-    AND     p.id_prestamo = a_idPre;
+    FROM    tipo_lector t
+    JOIN    lector l
+    ON      t.id_tipo = l.id_tipo
+    JOIN    prestamo p
+    ON      l.id_lector   = p.id_lector
+    WHERE   p.id_prestamo = a_idPre;
 
-    IF v_tipoLec = 'E'
+    IF v_tipoLec = 'E' THEN
         UPDATE PRESTAMO
         SET    f_devol     = f_devol + 8
         WHERE  id_prestamo = a_idPre;
-    ELSIF v_tipoLec = 'P'
+    ELSIF v_tipoLec = 'P' THEN
         UPDATE PRESTAMO
         SET    f_devol     = f_devol + 15
         WHERE  id_prestamo = a_idPre;
-    ELSIF v_tipoLec = 'I'
+    ELSIF v_tipoLec = 'I' THEN
         UPDATE PRESTAMO
         SET    f_devol     = f_devol + 30
         WHERE  id_prestamo = a_idPre;
