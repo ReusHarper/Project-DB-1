@@ -1,0 +1,86 @@
+
+INSERT INTO AUTOR VALUES('James','Stewart', 'Maitland','Estadounidense');
+INSERT INTO AUTOR VALUES('Octavio Irineo', 'Paz', 'Lozano', 'Mexicano');
+INSERT INTO AUTOR VALUES('Alberto', 'Campo', 'Baeza', 'Espaniol');
+INSERT INTO AUTOR VALUES('Carlos Delfin', 'Camacho', 'Gonzalez', 'Espaniol');
+
+INSERT INTO MATERIAL VALUES('Seccion de ciencias','Calculo de una variable. Trascendentes tempranas','794.12 E22', 'L');
+INSERT INTO MATERIAL VALUES('Seccion de literatura clasica','El laberinto de la soledad', '341.02 A31', 'L');
+INSERT INTO MATERIAL VALUES('Planta baja','Principia Architectonica', '12.43 PB121', 'L');
+INSERT INTO MATERIAL VALUES('Seccion de teconologia', 'Modelando la variabilidad', '978-84-699-8902-9', 'T');
+
+INSERT INTO LIBRO VALUES(,'978-84-939750-7-4','Septima','Ciencias');
+INSERT INTO LIBRO VALUES(,'0 8153 2096 5','Cuarta','Literatura contemporanea');
+INSERT INTO LIBRO VALUES(,'84-369-0441-9','');
+
+INSERT INTO DIRECTOR VALUES('Luis', 'Llana', 'Diaz', 'Doctor');
+
+INSERT INTO TESIS VALUES(,'84-369-0441-9','');
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------
+INSERT INTO AUTOR VALUES(1234,'Julio','Florencio','Cortazar','Argentina');
+INSERT INTO AUTOR VALUES(5678,'Gabriel','Mendez','Mendoza','Colombia');
+INSERT INTO AUTOR VALUES(9101,'Pablo','Neruda','Bosoalto','Chile');
+INSERT INTO AUTOR VALUES(1121,'Miguel','Martinez','Martinolli','Mexico');
+
+INSERT INTO MATERIAL VALUES(3040000012,'Literatura','Las uvas y el viento','AK304','L');
+INSERT INTO MATERIAL VALUES(3040000013,'Literatura','Rayuela','AK306','L');
+INSERT INTO MATERIAL VALUES(3050000015,'Programacion','Diseño de bases de datos','IJ204','T');
+INSERT INTO MATERIAL VALUES(3050000017,'Programacion','Algoritmos for dummies','IJ208','T');
+
+INSERT INTO CUENTA VALUES(3040000012,1234);
+INSERT INTO CUENTA VALUES(3040000013,9101);
+INSERT INTO CUENTA VALUES(3050000015,5678);
+INSERT INTO CUENTA VALUES(3050000017,1121);
+
+INSERT INTO LIBRO VALUES(3040000012,9874,'5241638947','Segunda','Ciencia');
+INSERT INTO LIBRO VALUES(3040000013,6541,'1236595761','Primera','Historia');
+
+INSERT INTO DIRECTOR VALUES(7531,'Erick','Hurtado','Mendez','Doctorado');
+INSERT INTO DIRECTOR VALUES(3698,'Miguel','Rodriguez','Morales','Maestria');
+INSERT INTO DIRECTOR VALUES(1325,'Maria','Muñoz','Franco','Doctorado');
+
+INSERT INTO TESIS VALUES(3050000015,1,'Sistemas',2004,7531);
+INSERT INTO TESIS VALUES(3050000017,2,'Sistemas',2012,1325);
+
+INSERT INTO EJEMPLAR VALUES(1,3050000015,'DISPONIBLE');
+INSERT INTO EJEMPLAR VALUES(2,3050000015,'DISPONIBLE');
+INSERT INTO EJEMPLAR VALUES(3,3050000015,'DISPONIBLE');
+INSERT INTO EJEMPLAR VALUES(4,3050000017,'DISPONIBLE');
+INSERT INTO EJEMPLAR VALUES(5,3050000017,'EN MANTENIMIENTO');
+INSERT INTO EJEMPLAR VALUES(6,3050000017,'DISPONIBLE');
+INSERT INTO EJEMPLAR VALUES(7,3040000012,'EN MANTENIMIENTO');
+INSERT INTO EJEMPLAR VALUES(8,3040000012,'DISPONIBLE');
+INSERT INTO EJEMPLAR VALUES(9,3040000013,'NO SALE');
+INSERT INTO EJEMPLAR VALUES(10,3040000013,'DISPONIBLE');
+
+INSERT INTO TIPO_LECTOR VALUES(1,'E',3,8,1);
+INSERT INTO TIPO_LECTOR VALUES(2,'P',5,15,2);
+INSERT INTO TIPO_LECTOR VALUES(3,'I',10,30,3);
+
+INSERT INTO LECTOR VALUES(100, 'Arturo', 'Espinosa', 'Guadarrama', SYSDATE, 5532358453, '24 de febrero', 'Francisco Sarabia', 'S/N', 1);
+
+EXEC p_lec_altaLec(1234567890,'Lourdes','Martinez','Muñoz',SYSDATE,5596321511,'Puerto angel','Piloto','9',3);
+EXEC p_lec_altaLec(1052637489,'Hector','Herrera','Hurtado',SYSDATE,5522336611,'Insurgentes','Del valle','12',1);
+EXEC p_lec_altaLec(4565321278,'Ingrid','Garcia','Dominguez',SYSDATE,5296748536,'Juan Cosio','Alfaro','9',1);
+EXEC p_lec_altaLec(7485522063,'Raul','Zarco','Zaragoza',SYSDATE,5643405056,'Rosa the','Alfaro','17',2);
+
+INSERT INTO PRESTAMO(id_prestamo, f_inicio, f_venci, refre_aut, id_lector, numEj, id_mat) VALUES(1000, SYSDATE, SYSDATE+8, 3, 1234567890, 1, 3050000015);
+INSERT INTO PRESTAMO VALUES(1001,'E',3,8,1);
+INSERT INTO PRESTAMO VALUES(1002,'E',3,8,1);
+
+UPDATE PRESTAMO SET f_devol = SYSDATE WHERE id_prestamo = 1000;
+
+DELETE FROM PRESTAMO WHERE id_prestamo = 1000;
+
+
+
+
+/**/
